@@ -3,7 +3,7 @@
  * Handles all HTTP requests with error handling and interceptors
  */
 
-const BASE_URL = "https://dramabox.sansekai.my.id/api/dramabox";
+const BASE_URL = "/api/dramabox";
 
 /**
  * API Error class for structured error handling
