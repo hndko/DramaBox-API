@@ -5,7 +5,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
-        <div class="flex items-center space-x-2">
+        <router-link to="/" class="flex items-center space-x-2">
           <div
             class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center"
           >
@@ -20,19 +20,23 @@
             </svg>
           </div>
           <span class="text-xl font-bold text-white">DramaBox</span>
-        </div>
+        </router-link>
 
         <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center space-x-8">
-          <a
+        <div class="hidden md:flex items-center space-x-1">
+          <router-link
             v-for="item in navItems"
             :key="item.name"
-            :href="item.href"
-            class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium"
-            :class="{ 'text-white': item.active }"
+            :to="item.to"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+            :class="
+              isActiveRoute(item.to)
+                ? 'text-white bg-white/10'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            "
           >
             {{ item.name }}
-          </a>
+          </router-link>
         </div>
 
         <!-- Search & Download -->
@@ -102,33 +106,62 @@
     </div>
 
     <!-- Mobile Navigation -->
-    <div
-      v-show="mobileMenuOpen"
-      class="md:hidden bg-dark-800 border-t border-white/5"
-    >
-      <div class="px-4 py-3 space-y-2">
-        <a
-          v-for="item in navItems"
-          :key="item.name"
-          :href="item.href"
-          class="block px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium"
-        >
-          {{ item.name }}
-        </a>
+    <transition name="slide-down">
+      <div
+        v-show="mobileMenuOpen"
+        class="md:hidden bg-dark-800 border-t border-white/5"
+      >
+        <div class="px-4 py-3 space-y-1">
+          <router-link
+            v-for="item in navItems"
+            :key="item.name"
+            :to="item.to"
+            @click="mobileMenuOpen = false"
+            class="block px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="
+              isActiveRoute(item.to)
+                ? 'text-white bg-white/10'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
+            "
+          >
+            {{ item.name }}
+          </router-link>
+        </div>
       </div>
-    </div>
+    </transition>
   </nav>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const mobileMenuOpen = ref(false);
 
 const navItems = [
-  { name: "For You", href: "#", active: true },
-  { name: "Browse", href: "#genres" },
-  { name: "Resources", href: "#" },
-  { name: "App", href: "#" },
+  { name: "For You", to: "/" },
+  { name: "Dub Indo", to: "/dubindo" },
+  { name: "Browse", to: "/browse" },
 ];
+
+const isActiveRoute = (path) => {
+  if (path === "/") {
+    return route.path === "/";
+  }
+  return route.path.startsWith(path);
+};
 </script>
+
+<style scoped>
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.2s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>

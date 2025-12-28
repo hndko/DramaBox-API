@@ -67,9 +67,34 @@ export function parseVipResponse(response) {
   };
 }
 
+/**
+ * Fetches Dub Indo dramas list
+ * @param {string} classify - 'terpopuler' or 'terbaru'
+ * @param {number} page - Page number (1-indexed)
+ * @returns {Promise<Array>} - List of dramas
+ */
+export async function getDubindoDramas(classify = "terpopuler", page = 1) {
+  const response = await get("/dubindo", { classify, page });
+  return response;
+}
+
+/**
+ * Transforms Dub Indo response to component-friendly format
+ * @param {Array} response - Array of dramas from API
+ * @returns {Array} - Transformed dramas array
+ */
+export function parseDubindoResponse(response) {
+  if (!Array.isArray(response)) {
+    return [];
+  }
+  return response.map(transformDrama);
+}
+
 export default {
   getVipDramas,
+  getDubindoDramas,
   transformDrama,
   transformSection,
   parseVipResponse,
+  parseDubindoResponse,
 };
