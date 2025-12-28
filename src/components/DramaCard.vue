@@ -9,6 +9,7 @@
         :alt="drama.title"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
+        @error="handleImageError"
       />
 
       <!-- Gradient Overlay -->
@@ -23,6 +24,15 @@
         <span class="text-xs font-medium text-white"
           >{{ drama.episodes }} Ep</span
         >
+      </div>
+
+      <!-- Corner Badge (VIP, etc) -->
+      <div
+        v-if="drama.corner"
+        class="absolute top-3 right-3 px-2 py-1 rounded-md text-xs font-medium text-white"
+        :style="{ backgroundColor: drama.corner.color }"
+      >
+        {{ drama.corner.name }}
       </div>
 
       <!-- Play Button (on hover) -->
@@ -90,27 +100,43 @@
       {{ drama.title }}
     </h3>
 
-    <!-- Genres -->
-    <div class="flex flex-wrap gap-1">
-      <span
-        v-for="(genre, index) in drama.genres.slice(0, 2)"
-        :key="index"
-        class="text-xs text-gray-500 hover:text-gray-400 transition-colors"
-      >
-        {{ genre
-        }}{{ index < Math.min(drama.genres.length, 2) - 1 ? " •" : "" }}
+    <!-- View Count & Genres -->
+    <div class="flex items-center justify-between">
+      <div class="flex flex-wrap gap-1">
+        <span
+          v-for="(genre, index) in displayGenres"
+          :key="index"
+          class="text-xs text-gray-500 hover:text-gray-400 transition-colors"
+        >
+          {{ genre }}{{ index < displayGenres.length - 1 ? " •" : "" }}
+        </span>
+      </div>
+      <span v-if="drama.viewCount" class="text-xs text-gray-500">
+        {{ drama.viewCount }}
       </span>
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from "vue";
+
+const props = defineProps({
   drama: {
     type: Object,
     required: true,
   },
 });
+
+const displayGenres = computed(() => {
+  return (props.drama.genres || []).slice(0, 2);
+});
+
+const handleImageError = (e) => {
+  // Fallback image on error
+  e.target.src =
+    "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&h=600&fit=crop";
+};
 </script>
 
 <style scoped>

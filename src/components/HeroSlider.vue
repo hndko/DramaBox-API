@@ -5,9 +5,10 @@
       <transition name="fade" mode="out-in">
         <img
           :key="currentSlide"
-          :src="dramas[currentSlide].image"
-          :alt="dramas[currentSlide].title"
+          :src="currentDrama?.image"
+          :alt="currentDrama?.title"
           class="w-full h-full object-cover"
+          @error="handleImageError"
         />
       </transition>
       <div
@@ -29,7 +30,10 @@
         >
           <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
           <span class="text-sm text-gray-300"
-            >{{ dramas[currentSlide].episodes }} Episodes</span
+            >{{ currentDrama?.episodes }} Episodes</span
+          >
+          <span v-if="currentDrama?.viewCount" class="text-sm text-gray-400"
+            >• {{ currentDrama?.viewCount }} views</span
           >
         </div>
 
@@ -37,18 +41,18 @@
         <h1
           class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight"
         >
-          {{ dramas[currentSlide].title }}
+          {{ currentDrama?.title }}
         </h1>
 
         <!-- Description -->
         <p class="text-gray-300 text-lg mb-6 line-clamp-3">
-          {{ dramas[currentSlide].description }}
+          {{ currentDrama?.description }}
         </p>
 
         <!-- Genres -->
         <div class="flex flex-wrap gap-2 mb-8">
           <span
-            v-for="genre in dramas[currentSlide].genres"
+            v-for="genre in currentDrama?.genres?.slice(0, 5)"
             :key="genre"
             class="px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-sm text-gray-300 hover:bg-white/20 transition-colors cursor-pointer"
           >
@@ -148,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 
 const props = defineProps({
   dramas: {
@@ -160,11 +164,17 @@ const props = defineProps({
 const currentSlide = ref(0);
 let autoplayInterval = null;
 
+const currentDrama = computed(() => {
+  return props.dramas[currentSlide.value] || null;
+});
+
 const nextSlide = () => {
+  if (props.dramas.length === 0) return;
   currentSlide.value = (currentSlide.value + 1) % props.dramas.length;
 };
 
 const prevSlide = () => {
+  if (props.dramas.length === 0) return;
   currentSlide.value =
     currentSlide.value === 0 ? props.dramas.length - 1 : currentSlide.value - 1;
 };
@@ -174,7 +184,9 @@ const goToSlide = (index) => {
 };
 
 const startAutoplay = () => {
-  autoplayInterval = setInterval(nextSlide, 5000);
+  if (props.dramas.length > 1) {
+    autoplayInterval = setInterval(nextSlide, 5000);
+  }
 };
 
 const stopAutoplay = () => {
@@ -182,6 +194,21 @@ const stopAutoplay = () => {
     clearInterval(autoplayInterval);
   }
 };
+
+const handleImageError = (e) => {
+  e.target.src =
+    "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&h=1200&fit=crop";
+};
+
+// Reset slide when dramas change
+watch(
+  () => props.dramas,
+  () => {
+    currentSlide.value = 0;
+    stopAutoplay();
+    startAutoplay();
+  }
+);
 
 onMounted(() => {
   startAutoplay();
