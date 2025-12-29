@@ -174,11 +174,33 @@ export function parseForYouResponse(response) {
   return response.map(transformDrama);
 }
 
+/**
+ * Fetches latest/newly released dramas
+ * @returns {Promise<Array>} - List of latest dramas
+ */
+export async function getLatestDramas() {
+  const response = await get("/latest");
+  return response;
+}
+
+/**
+ * Transforms Latest dramas response to component-friendly format
+ * @param {Array} response - Array of dramas from API
+ * @returns {Array} - Transformed dramas array
+ */
+export function parseLatestResponse(response) {
+  if (!Array.isArray(response)) {
+    return [];
+  }
+  return response.map(transformDrama);
+}
+
 export default {
   getVipDramas,
   getDubindoDramas,
   getRandomDramas,
   getForYouDramas,
+  getLatestDramas,
   transformDrama,
   transformVideoDrama,
   transformSection,
@@ -186,4 +208,5 @@ export default {
   parseDubindoResponse,
   parseRandomDramaResponse,
   parseForYouResponse,
+  parseLatestResponse,
 };
