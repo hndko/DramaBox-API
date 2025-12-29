@@ -1,23 +1,21 @@
 <template>
-  <router-link
-    :to="`/drama/${drama.id}`"
-    class="drama-card group cursor-pointer block"
-  >
+  <router-link :to="`/drama/${drama.id}`" class="drama-card group block">
     <!-- Poster Container -->
     <div
-      class="relative aspect-[2/3] rounded-xl overflow-hidden bg-dark-700 mb-3"
+      class="poster-container relative aspect-[2/3] rounded-xl overflow-hidden bg-dark-700 mb-3"
     >
       <img
         :src="drama.image"
         :alt="drama.title"
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        class="poster-image"
         loading="lazy"
+        decoding="async"
         @error="handleImageError"
       />
 
       <!-- Gradient Overlay -->
       <div
-        class="absolute inset-0 bg-gradient-to-t from-dark-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        class="absolute inset-0 bg-gradient-to-t from-dark-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       ></div>
 
       <!-- Episode Badge -->
@@ -40,10 +38,10 @@
 
       <!-- Play Button (on hover) -->
       <div
-        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       >
-        <button
-          class="w-14 h-14 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/30 transform scale-75 group-hover:scale-100 transition-transform duration-300"
+        <span
+          class="w-14 h-14 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/30"
         >
           <svg
             class="w-6 h-6 text-white ml-1"
@@ -52,15 +50,16 @@
           >
             <path d="M8 5v14l11-7z" />
           </svg>
-        </button>
+        </span>
       </div>
 
       <!-- Quick Actions (on hover) -->
       <div
-        class="absolute bottom-3 left-3 right-3 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0"
+        class="absolute bottom-3 left-3 right-3 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       >
         <button
-          class="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          class="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30"
+          @click.prevent
         >
           <svg
             class="w-4 h-4 text-white"
@@ -77,7 +76,8 @@
           </svg>
         </button>
         <button
-          class="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          class="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30"
+          @click.prevent
         >
           <svg
             class="w-4 h-4 text-white"
@@ -98,7 +98,7 @@
 
     <!-- Title -->
     <h3
-      class="text-white font-medium text-sm line-clamp-2 mb-2 group-hover:text-pink-400 transition-colors"
+      class="text-white font-medium text-sm line-clamp-2 mb-2 group-hover:text-pink-400 transition-colors duration-200"
     >
       {{ drama.title }}
     </h3>
@@ -109,7 +109,7 @@
         <span
           v-for="(genre, index) in displayGenres"
           :key="index"
-          class="text-xs text-gray-500 hover:text-gray-400 transition-colors"
+          class="text-xs text-gray-500"
         >
           {{ genre }}{{ index < displayGenres.length - 1 ? " •" : "" }}
         </span>
@@ -143,6 +143,22 @@ const handleImageError = (e) => {
 </script>
 
 <style scoped>
+.drama-card {
+  contain: layout style;
+  cursor: pointer;
+}
+
+.poster-container {
+  contain: layout paint;
+}
+
+.poster-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(0);
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

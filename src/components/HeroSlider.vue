@@ -1,16 +1,18 @@
 <template>
-  <div class="relative h-[80vh] min-h-[600px] overflow-hidden">
+  <div class="hero-slider relative h-[80vh] min-h-[600px] overflow-hidden">
     <!-- Background Image with Gradient Overlay -->
     <div class="absolute inset-0">
-      <transition name="fade" mode="out-in">
+      <div class="hero-bg-container">
         <img
-          :key="currentSlide"
-          :src="currentDrama?.image"
+          v-if="currentDrama?.image"
+          :src="currentDrama.image"
           :alt="currentDrama?.title"
-          class="w-full h-full object-cover"
+          class="hero-bg-image"
+          loading="eager"
+          decoding="async"
           @error="handleImageError"
         />
-      </transition>
+      </div>
       <div
         class="absolute inset-0 bg-gradient-to-r from-dark-900 via-dark-900/80 to-transparent"
       ></div>
@@ -23,7 +25,7 @@
     <div
       class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center"
     >
-      <div class="max-w-2xl fade-in">
+      <div class="max-w-2xl hero-content">
         <!-- Episode Badge -->
         <div
           class="inline-flex items-center space-x-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full mb-4"
@@ -63,7 +65,7 @@
         <!-- CTA Buttons -->
         <div class="flex items-center space-x-4">
           <button
-            class="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-pink-500/30 transition-all duration-300 transform hover:scale-105"
+            class="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-pink-500/30 transition-shadow duration-300"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
@@ -71,7 +73,7 @@
             <span>Watch Now</span>
           </button>
           <button
-            class="flex items-center space-x-2 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-white font-semibold hover:bg-white/20 transition-all duration-300"
+            class="flex items-center space-x-2 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-white font-semibold hover:bg-white/20 transition-colors duration-300"
           >
             <svg
               class="w-5 h-5"
@@ -114,7 +116,7 @@
     <!-- Navigation Arrows -->
     <button
       @click="prevSlide"
-      class="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition-all duration-300 hidden sm:block"
+      class="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition-colors duration-300 hidden sm:block"
     >
       <svg
         class="w-6 h-6"
@@ -132,7 +134,7 @@
     </button>
     <button
       @click="nextSlide"
-      class="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition-all duration-300 hidden sm:block"
+      class="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition-colors duration-300 hidden sm:block"
     >
       <svg
         class="w-6 h-6"
@@ -152,7 +154,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch, shallowRef } from "vue";
 
 const props = defineProps({
   dramas: {
@@ -162,7 +164,7 @@ const props = defineProps({
 });
 
 const currentSlide = ref(0);
-let autoplayInterval = null;
+const autoplayInterval = shallowRef(null);
 
 const currentDrama = computed(() => {
   return props.dramas[currentSlide.value] || null;
@@ -181,18 +183,25 @@ const prevSlide = () => {
 
 const goToSlide = (index) => {
   currentSlide.value = index;
+  resetAutoplay();
 };
 
 const startAutoplay = () => {
-  if (props.dramas.length > 1) {
-    autoplayInterval = setInterval(nextSlide, 5000);
+  if (props.dramas.length > 1 && !autoplayInterval.value) {
+    autoplayInterval.value = setInterval(nextSlide, 5000);
   }
 };
 
 const stopAutoplay = () => {
-  if (autoplayInterval) {
-    clearInterval(autoplayInterval);
+  if (autoplayInterval.value) {
+    clearInterval(autoplayInterval.value);
+    autoplayInterval.value = null;
   }
+};
+
+const resetAutoplay = () => {
+  stopAutoplay();
+  startAutoplay();
 };
 
 const handleImageError = (e) => {
@@ -205,9 +214,9 @@ watch(
   () => props.dramas,
   () => {
     currentSlide.value = 0;
-    stopAutoplay();
-    startAutoplay();
-  }
+    resetAutoplay();
+  },
+  { deep: false }
 );
 
 onMounted(() => {
@@ -220,14 +229,26 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
+.hero-slider {
+  contain: layout style;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.hero-bg-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+.hero-content {
+  contain: content;
 }
 
 .line-clamp-3 {
