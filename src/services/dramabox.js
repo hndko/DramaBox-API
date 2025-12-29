@@ -401,6 +401,69 @@ export function parseDetailResponse(response) {
   };
 }
 
+/**
+ * Fetches all episodes with streaming links
+ * @param {string} bookId - The drama's book ID
+ * @returns {Promise<Array>} - List of episodes with streaming URLs
+ */
+export async function getAllEpisodes(bookId) {
+  if (!bookId) {
+    throw new Error("bookId is required");
+  }
+  const response = await get("/allepisode", { bookId });
+  return response;
+}
+
+/**
+ * Transforms streaming episode data
+ * @param {Object} episode - Episode from allEpisode API
+ * @returns {Object} - Transformed episode with quality options
+ */
+export function transformStreamingEpisode(episode) {
+  // Get default CDN
+  const defaultCdn =
+    episode.cdnList?.find((cdn) => cdn.isDefault === 1) || episode.cdnList?.[0];
+
+  // Extract video URLs by quality
+  let videoUrls = {};
+  if (defaultCdn?.videoPathList) {
+    defaultCdn.videoPathList.forEach((video) => {
+      videoUrls[video.quality] = {
+        url: video.videoPath,
+        isDefault: video.isDefault === 1,
+        isVip: video.isVipEquity === 1,
+      };
+    });
+  }
+
+  return {
+    id: episode.chapterId,
+    index: episode.chapterIndex,
+    name: episode.chapterName,
+    cover: episode.chapterImg,
+    isPaid: episode.chargeChapter || episode.isCharge === 1,
+    videos: {
+      sd: videoUrls[540]?.url || null,
+      hd: videoUrls[720]?.url || null,
+      fhd: videoUrls[1080]?.url || null,
+    },
+    defaultQuality:
+      defaultCdn?.videoPathList?.find((v) => v.isDefault === 1)?.quality || 720,
+  };
+}
+
+/**
+ * Parses all episodes response
+ * @param {Array} response - Array of episodes from API
+ * @returns {Array} - Parsed episodes with streaming URLs
+ */
+export function parseAllEpisodesResponse(response) {
+  if (!Array.isArray(response)) {
+    return [];
+  }
+  return response.map(transformStreamingEpisode);
+}
+
 export default {
   getVipDramas,
   getDubindoDramas,
@@ -411,12 +474,14 @@ export default {
   getPopularSearchDramas,
   searchDramas,
   getDramaDetail,
+  getAllEpisodes,
   transformDrama,
   transformVideoDrama,
   transformSearchDrama,
   transformDetailBook,
   transformChapter,
   transformPerformer,
+  transformStreamingEpisode,
   transformSection,
   parseVipResponse,
   parseDubindoResponse,
@@ -427,4 +492,5 @@ export default {
   parsePopularSearchResponse,
   parseSearchResponse,
   parseDetailResponse,
+  parseAllEpisodesResponse,
 };
