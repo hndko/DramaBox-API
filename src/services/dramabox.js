@@ -90,11 +90,77 @@ export function parseDubindoResponse(response) {
   return response.map(transformDrama);
 }
 
+/**
+ * Fetches random dramas for video feed
+ * @returns {Promise<Array>} - List of dramas with video data
+ */
+export async function getRandomDramas() {
+  const response = await get("/randomdrama");
+  return response;
+}
+
+/**
+ * Transforms video drama data to component-friendly format
+ * @param {Object} drama - Drama object from randomdrama API
+ * @returns {Object} - Transformed video drama object
+ */
+export function transformVideoDrama(drama) {
+  // Get default 720p video URL
+  const defaultCdn =
+    drama.cdnList?.find((cdn) => cdn.isDefault === 1) || drama.cdnList?.[0];
+  const defaultVideo =
+    defaultCdn?.videoPathList?.find((v) => v.isDefault === 1) ||
+    defaultCdn?.videoPathList?.[1];
+
+  return {
+    id: drama.bookId,
+    title: drama.bookName,
+    image: drama.bookCover,
+    thumbnail: drama.chapterImg,
+    description: drama.introduction || "",
+    genres: drama.tags || [],
+    viewCount: drama.playCount || "0",
+    corner: drama.corner || null,
+    inLibrary: drama.inLibrary || false,
+    // Video specific
+    chapterId: drama.chapterId,
+    chapterIndex: drama.chapterIndex,
+    totalChapters: drama.totalChapterNum,
+    nextChapterId: drama.nextChapterId,
+    videoUrl: defaultVideo?.videoPath || drama.videoPath,
+    videoQualities: defaultCdn?.videoPathList || [],
+    // Performers
+    performers: (drama.performers || []).map((p) => ({
+      id: p.performerId,
+      name: p.performerName,
+      avatar: p.performerAvatar,
+      videoCount: p.videoCount,
+    })),
+    // Share info
+    shareDescription: drama.shareVo?.description || "",
+  };
+}
+
+/**
+ * Transforms random drama response to component-friendly format
+ * @param {Array} response - Array of dramas from API
+ * @returns {Array} - Transformed video dramas array
+ */
+export function parseRandomDramaResponse(response) {
+  if (!Array.isArray(response)) {
+    return [];
+  }
+  return response.map(transformVideoDrama);
+}
+
 export default {
   getVipDramas,
   getDubindoDramas,
+  getRandomDramas,
   transformDrama,
+  transformVideoDrama,
   transformSection,
   parseVipResponse,
   parseDubindoResponse,
+  parseRandomDramaResponse,
 };

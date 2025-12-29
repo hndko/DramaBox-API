@@ -141,6 +141,7 @@ const mobileMenuOpen = ref(false);
 
 const navItems = [
   { name: "For You", to: "/" },
+  { name: "📹 Video", to: "/foryou" },
   { name: "Dub Indo", to: "/dubindo" },
   { name: "Browse", to: "/browse" },
 ];

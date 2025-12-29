@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // Lazy load pages for better performance
 const HomePage = () => import("../pages/HomePage.vue");
 const DubIndoPage = () => import("../pages/DubIndoPage.vue");
+const ForYouPage = () => import("../pages/ForYouPage.vue");
 
 const routes = [
   {
@@ -10,6 +11,12 @@ const routes = [
     name: "Home",
     component: HomePage,
     meta: { title: "For You" },
+  },
+  {
+    path: "/foryou",
+    name: "ForYou",
+    component: ForYouPage,
+    meta: { title: "For You Video", hideNav: true },
   },
   {
     path: "/dubindo",
