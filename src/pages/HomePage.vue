@@ -118,6 +118,14 @@
         accent="orange"
       />
 
+      <!-- Popular Search -->
+      <DramaSection
+        v-if="popularSearchDramas.length > 0"
+        title="Banyak Dicari"
+        :dramas="popularSearchDramas"
+        accent="blue"
+      />
+
       <!-- CTA Banner -->
       <section class="py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -202,11 +210,13 @@ import { useDramas } from "../composables/useDramas.js";
 import { useForYou } from "../composables/useForYou.js";
 import { useLatest } from "../composables/useLatest.js";
 import { useTrending } from "../composables/useTrending.js";
+import { usePopularSearch } from "../composables/usePopularSearch.js";
 
 const { loading, error, sections, featured, hasError, refresh } = useDramas();
 const { dramas: recommendations } = useForYou();
 const { dramas: latestDramas } = useLatest();
 const { dramas: trendingDramas } = useTrending();
+const { dramas: popularSearchDramas } = usePopularSearch();
 
 const selectedGenre = ref("Romansa");
 

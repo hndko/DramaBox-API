@@ -216,6 +216,27 @@ export function parseTrendingResponse(response) {
   return response.map(transformDrama);
 }
 
+/**
+ * Fetches popular search dramas (most searched keywords)
+ * @returns {Promise<Array>} - List of popular search dramas
+ */
+export async function getPopularSearchDramas() {
+  const response = await get("/populersearch");
+  return response;
+}
+
+/**
+ * Transforms Popular Search response to component-friendly format
+ * @param {Array} response - Array of dramas from API
+ * @returns {Array} - Transformed dramas array
+ */
+export function parsePopularSearchResponse(response) {
+  if (!Array.isArray(response)) {
+    return [];
+  }
+  return response.map(transformDrama);
+}
+
 export default {
   getVipDramas,
   getDubindoDramas,
@@ -223,6 +244,7 @@ export default {
   getForYouDramas,
   getLatestDramas,
   getTrendingDramas,
+  getPopularSearchDramas,
   transformDrama,
   transformVideoDrama,
   transformSection,
@@ -232,4 +254,5 @@ export default {
   parseForYouResponse,
   parseLatestResponse,
   parseTrendingResponse,
+  parsePopularSearchResponse,
 };
