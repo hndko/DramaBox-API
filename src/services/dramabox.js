@@ -280,6 +280,127 @@ export function parseSearchResponse(response) {
   return response.map(transformSearchDrama);
 }
 
+/**
+ * Fetches drama detail by bookId
+ * @param {string} bookId - The drama's book ID
+ * @returns {Promise<Object>} - Drama detail data
+ */
+export async function getDramaDetail(bookId) {
+  if (!bookId) {
+    throw new Error("bookId is required");
+  }
+  const response = await get("/detail", { bookId });
+  return response;
+}
+
+/**
+ * Transforms performer data
+ * @param {Object} performer - Performer from API
+ * @returns {Object} - Transformed performer
+ */
+export function transformPerformer(performer) {
+  return {
+    id: performer.performerId,
+    name: performer.performerName,
+    avatar: performer.performerAvatar,
+    videoCount: performer.videoCount || 0,
+  };
+}
+
+/**
+ * Transforms chapter data
+ * @param {Object} chapter - Chapter from API
+ * @returns {Object} - Transformed chapter
+ */
+export function transformChapter(chapter) {
+  return {
+    id: chapter.id,
+    name: chapter.name,
+    index: chapter.index,
+    indexStr: chapter.indexStr,
+    unlocked: chapter.unlock || false,
+    cover: chapter.cover,
+    videoUrl: chapter.mp4 || null,
+    hlsUrl: chapter.m3u8Url || null,
+    duration: chapter.duration || 0,
+    durationFormatted: formatDuration(chapter.duration),
+    price: chapter.chapterPrice || 0,
+    isNew: chapter.new || false,
+    updateDate: chapter.utime,
+  };
+}
+
+/**
+ * Format duration from ms to mm:ss
+ * @param {number} ms - Duration in milliseconds
+ * @returns {string} - Formatted duration
+ */
+function formatDuration(ms) {
+  if (!ms) return "0:00";
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+/**
+ * Transforms detail book data
+ * @param {Object} book - Book from API detail response
+ * @returns {Object} - Transformed book
+ */
+export function transformDetailBook(book) {
+  return {
+    id: book.bookId,
+    title: book.bookName,
+    image: book.cover,
+    description: book.introduction || "",
+    viewCount: book.viewCount || 0,
+    viewCountFormatted: formatViewCount(book.viewCount),
+    followCount: book.followCount || 0,
+    chapterCount: book.chapterCount || 0,
+    genres: book.typeTwoNames || [],
+    tags: book.tags || book.labels || [],
+    language: book.language,
+    shelfTime: book.shelfTime,
+    performers: (book.performerList || []).map(transformPerformer),
+  };
+}
+
+/**
+ * Format view count to readable format
+ * @param {number} count - View count
+ * @returns {string} - Formatted count
+ */
+function formatViewCount(count) {
+  if (!count) return "0";
+  if (count >= 1000000) {
+    return (count / 1000000).toFixed(1) + "M";
+  }
+  if (count >= 1000) {
+    return (count / 1000).toFixed(1) + "K";
+  }
+  return count.toString();
+}
+
+/**
+ * Parses drama detail response
+ * @param {Object} response - API response
+ * @returns {Object} - Parsed detail data
+ */
+export function parseDetailResponse(response) {
+  if (!response || !response.data) {
+    return null;
+  }
+
+  const { book, chapterList, recommends } = response.data;
+
+  return {
+    book: book ? transformDetailBook(book) : null,
+    chapters: (chapterList || []).map(transformChapter),
+    recommendations: (recommends || []).map(transformDetailBook),
+  };
+}
+
 export default {
   getVipDramas,
   getDubindoDramas,
@@ -289,9 +410,13 @@ export default {
   getTrendingDramas,
   getPopularSearchDramas,
   searchDramas,
+  getDramaDetail,
   transformDrama,
   transformVideoDrama,
   transformSearchDrama,
+  transformDetailBook,
+  transformChapter,
+  transformPerformer,
   transformSection,
   parseVipResponse,
   parseDubindoResponse,
@@ -301,4 +426,5 @@ export default {
   parseTrendingResponse,
   parsePopularSearchResponse,
   parseSearchResponse,
+  parseDetailResponse,
 };

@@ -5,6 +5,7 @@ const HomePage = () => import("../pages/HomePage.vue");
 const DubIndoPage = () => import("../pages/DubIndoPage.vue");
 const ForYouPage = () => import("../pages/ForYouPage.vue");
 const SearchPage = () => import("../pages/SearchPage.vue");
+const DetailPage = () => import("../pages/DetailPage.vue");
 
 const routes = [
   {
@@ -30,6 +31,12 @@ const routes = [
     name: "Search",
     component: SearchPage,
     meta: { title: "Cari Drama" },
+  },
+  {
+    path: "/drama/:id",
+    name: "Detail",
+    component: DetailPage,
+    meta: { title: "Detail Drama" },
   },
   // Redirect unknown routes to home
   {

@@ -1,5 +1,8 @@
 <template>
-  <div class="drama-card group cursor-pointer">
+  <router-link
+    :to="`/drama/${drama.id}`"
+    class="drama-card group cursor-pointer block"
+  >
     <!-- Poster Container -->
     <div
       class="relative aspect-[2/3] rounded-xl overflow-hidden bg-dark-700 mb-3"
@@ -115,7 +118,7 @@
         {{ drama.viewCount }}
       </span>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script setup>
