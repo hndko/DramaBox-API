@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 const HomePage = () => import("../pages/HomePage.vue");
 const DubIndoPage = () => import("../pages/DubIndoPage.vue");
 const ForYouPage = () => import("../pages/ForYouPage.vue");
+const SearchPage = () => import("../pages/SearchPage.vue");
 
 const routes = [
   {
@@ -23,6 +24,12 @@ const routes = [
     name: "DubIndo",
     component: DubIndoPage,
     meta: { title: "Dub Indo" },
+  },
+  {
+    path: "/search",
+    name: "Search",
+    component: SearchPage,
+    meta: { title: "Cari Drama" },
   },
   // Redirect unknown routes to home
   {

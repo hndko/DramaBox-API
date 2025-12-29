@@ -237,6 +237,49 @@ export function parsePopularSearchResponse(response) {
   return response.map(transformDrama);
 }
 
+/**
+ * Search dramas by query
+ * @param {string} query - Search query
+ * @returns {Promise<Array>} - List of matching dramas
+ */
+export async function searchDramas(query) {
+  if (!query || query.trim() === "") {
+    return [];
+  }
+  const response = await get("/search", { query: query.trim() });
+  return response;
+}
+
+/**
+ * Transforms search result to component-friendly format
+ * @param {Object} drama - Drama object from search API
+ * @returns {Object} - Transformed drama object
+ */
+export function transformSearchDrama(drama) {
+  return {
+    id: drama.bookId,
+    title: drama.bookName,
+    image: drama.cover,
+    description: drama.introduction || "",
+    genres: drama.tagNames || [],
+    protagonist: drama.protagonist || "",
+    corner: drama.corner || null,
+    inLibrary: drama.inLibrary || false,
+  };
+}
+
+/**
+ * Transforms Search response to component-friendly format
+ * @param {Array} response - Array of dramas from API
+ * @returns {Array} - Transformed dramas array
+ */
+export function parseSearchResponse(response) {
+  if (!Array.isArray(response)) {
+    return [];
+  }
+  return response.map(transformSearchDrama);
+}
+
 export default {
   getVipDramas,
   getDubindoDramas,
@@ -245,8 +288,10 @@ export default {
   getLatestDramas,
   getTrendingDramas,
   getPopularSearchDramas,
+  searchDramas,
   transformDrama,
   transformVideoDrama,
+  transformSearchDrama,
   transformSection,
   parseVipResponse,
   parseDubindoResponse,
@@ -255,4 +300,5 @@ export default {
   parseLatestResponse,
   parseTrendingResponse,
   parsePopularSearchResponse,
+  parseSearchResponse,
 };

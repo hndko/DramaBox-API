@@ -41,7 +41,10 @@
 
         <!-- Search & Download -->
         <div class="flex items-center space-x-4">
-          <button class="p-2 text-gray-400 hover:text-white transition-colors">
+          <router-link
+            to="/search"
+            class="p-2 text-gray-400 hover:text-white transition-colors"
+          >
             <svg
               class="w-5 h-5"
               fill="none"
@@ -55,7 +58,7 @@
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-          </button>
+          </router-link>
           <button
             class="hidden sm:flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full text-white text-sm font-medium hover:shadow-lg hover:shadow-pink-500/30 transition-all duration-300"
           >
