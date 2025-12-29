@@ -359,8 +359,8 @@
       <!-- Swipe Overlay for touch -->
       <div
         class="absolute inset-0 z-5"
-        @touchstart="onTouchStart"
-        @touchend="onTouchEnd"
+        @touchstart.passive="onTouchStart"
+        @touchend.passive="onTouchEnd"
       ></div>
     </template>
   </div>
@@ -474,13 +474,35 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Page containment for performance */
 .video-feed-container {
+  contain: layout style;
   -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
 }
 
+/* Video containment */
+video {
+  contain: layout paint;
+  transform: translateZ(0);
+  will-change: contents;
+}
+
+/* Absolute positioned elements containment */
+.absolute {
+  contain: layout;
+}
+
+/* Gradient overlays - static, no animation needed */
+.bg-gradient-to-b,
+.bg-gradient-to-t {
+  contain: paint;
+}
+
+/* Optimized fade transition */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 150ms ease-out;
 }
 
 .fade-enter-from,
@@ -488,6 +510,7 @@ onUnmounted(() => {
   opacity: 0;
 }
 
+/* Line clamp utilities */
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -500,5 +523,17 @@ onUnmounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Buttons containment */
+button {
+  contain: layout style;
+}
+
+/* Reduce backdrop-blur on lower-end devices */
+@media (prefers-reduced-motion: reduce) {
+  .backdrop-blur-sm {
+    backdrop-filter: none;
+  }
 }
 </style>
