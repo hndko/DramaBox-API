@@ -230,7 +230,7 @@
                 <img
                   :src="chapter.cover"
                   :alt="chapter.name"
-                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  class="w-full h-full object-cover"
                   @error="onImageError"
                 />
                 <div
@@ -318,7 +318,7 @@
                 <img
                   :src="rec.image"
                   :alt="rec.title"
-                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  class="w-full h-full object-cover"
                   @error="onImageError"
                 />
                 <div
@@ -375,10 +375,43 @@ function onAvatarError(e) {
 </script>
 
 <style scoped>
+/* Page containment */
+.min-h-screen {
+  contain: layout style;
+}
+
+/* Hero image optimization */
+.blur-xl {
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+/* Grid containment */
+.grid {
+  contain: layout;
+}
+
+/* Remove heavy hover animations */
+.group:hover img {
+  /* Removed scale-110 - causes reflow */
+}
+
+/* Episode card containment */
+.aspect-\[3\/4\],
+.aspect-\[2\/3\] {
+  contain: layout paint;
+}
+
+/* Line clamp utility */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Optimized transitions - only opacity */
+.transition-opacity {
+  transition: opacity 150ms ease-out;
 }
 </style>

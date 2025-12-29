@@ -118,7 +118,7 @@
               <img
                 :src="drama.image"
                 :alt="drama.title"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                class="w-full h-full object-cover"
                 @error="onImageError"
               />
               <div
@@ -270,6 +270,19 @@ function onImageError(e) {
 </script>
 
 <style scoped>
+/* Page containment */
+.min-h-screen {
+  contain: layout style;
+}
+
+.grid {
+  contain: layout;
+}
+
+.aspect-\[2\/3\] {
+  contain: layout paint;
+}
+
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;

@@ -2,7 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar */
+/* ============================
+   Performance Optimizations
+   ============================ */
+
+/* Enable GPU acceleration for animated elements */
+* {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Global containment for sections */
+section {
+  contain: layout style;
+}
+
+/* Grid containment */
+.grid {
+  contain: layout;
+}
+
+/* ============================
+   Custom Scrollbar
+   ============================ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -31,37 +64,39 @@
   scrollbar-width: none;
 }
 
+/* ============================
+   UI Components
+   ============================ */
+
 /* Gradient text */
 .gradient-text {
   @apply bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent;
 }
 
-/* Card hover effect */
+/* Card styles - OPTIMIZED: removed translate-y and shadow animations */
 .drama-card {
-  @apply transition-all duration-300 ease-out;
+  contain: layout style;
+  transform: translateZ(0);
 }
 
+/* Only change opacity on hover - no layout shift */
 .drama-card:hover {
-  @apply -translate-y-2 shadow-2xl shadow-pink-500/20;
+  /* Removed: -translate-y-2 shadow-2xl shadow-pink-500/20 */
+  /* These cause forced reflow */
 }
 
-/* Slide animation */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Image containment for grids */
+.drama-card img,
+.poster-image {
+  contain: paint;
+  transform: translateZ(0);
 }
 
-.slide-in {
-  animation: slideIn 0.5s ease-out;
-}
+/* ============================
+   Animations (Optimized)
+   ============================ */
 
-/* Fade animation */
+/* Use opacity only animations - no layout shift */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -72,5 +107,59 @@
 }
 
 .fade-in {
-  animation: fadeIn 0.8s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
+
+/* Slide animation using transform only */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(20px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* ============================
+   Loading States
+   ============================ */
+
+/* Optimized pulse animation */
+@keyframes optimizedPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: optimizedPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================
+   Transitions (Optimized)
+   ============================ */
+
+/* Only transition opacity and color - NOT layout properties */
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+/* Avoid transition-all - causes reflow */
