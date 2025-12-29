@@ -94,6 +94,14 @@
         :accent="getAccentColor(index)"
       />
 
+      <!-- For You Recommendations -->
+      <DramaSection
+        v-if="recommendations.length > 0"
+        title="Rekomendasi Untukmu"
+        :dramas="recommendations"
+        accent="rose"
+      />
+
       <!-- CTA Banner -->
       <section class="py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -175,8 +183,10 @@ import HeroSlider from "../components/HeroSlider.vue";
 import DramaSection from "../components/DramaSection.vue";
 import LoadingSkeleton from "../components/LoadingSkeleton.vue";
 import { useDramas } from "../composables/useDramas.js";
+import { useForYou } from "../composables/useForYou.js";
 
 const { loading, error, sections, featured, hasError, refresh } = useDramas();
+const { dramas: recommendations } = useForYou();
 
 const selectedGenre = ref("Romansa");
 

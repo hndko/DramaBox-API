@@ -153,14 +153,37 @@ export function parseRandomDramaResponse(response) {
   return response.map(transformVideoDrama);
 }
 
+/**
+ * Fetches recommended dramas for user (For You)
+ * @returns {Promise<Array>} - List of recommended dramas
+ */
+export async function getForYouDramas() {
+  const response = await get("/foryou");
+  return response;
+}
+
+/**
+ * Transforms For You response to component-friendly format
+ * @param {Array} response - Array of dramas from API
+ * @returns {Array} - Transformed dramas array
+ */
+export function parseForYouResponse(response) {
+  if (!Array.isArray(response)) {
+    return [];
+  }
+  return response.map(transformDrama);
+}
+
 export default {
   getVipDramas,
   getDubindoDramas,
   getRandomDramas,
+  getForYouDramas,
   transformDrama,
   transformVideoDrama,
   transformSection,
   parseVipResponse,
   parseDubindoResponse,
   parseRandomDramaResponse,
+  parseForYouResponse,
 };
