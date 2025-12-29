@@ -173,15 +173,16 @@
 
             <!-- CTA -->
             <div class="flex flex-wrap gap-4">
-              <button
+              <router-link
                 v-if="unlockedChapters.length > 0"
+                :to="`/watch/${bookId}/0`"
                 class="px-8 py-3 bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-pink-500/30 transition-all flex items-center gap-2"
               >
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
                 Tonton Sekarang
-              </button>
+              </router-link>
               <button
                 class="px-6 py-3 bg-white/10 rounded-xl text-white font-medium hover:bg-white/20 transition-colors flex items-center gap-2"
               >
@@ -216,10 +217,12 @@
           <div
             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
-            <div
-              v-for="chapter in chapters.slice(0, 12)"
+            <router-link
+              v-for="chapter in displayedChapters"
               :key="chapter.id"
-              class="group cursor-pointer"
+              :to="chapter.unlocked ? `/watch/${bookId}/${chapter.index}` : '#'"
+              class="group cursor-pointer block"
+              :class="{ 'pointer-events-none': !chapter.unlocked }"
             >
               <div
                 class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2"
@@ -279,15 +282,20 @@
                 Ep {{ chapter.index + 1 }}
               </p>
               <p class="text-gray-500 text-xs">{{ chapter.name }}</p>
-            </div>
+            </router-link>
           </div>
 
           <!-- Show More -->
           <div v-if="chapters.length > 12" class="mt-6 text-center">
             <button
+              @click="toggleShowAllEpisodes"
               class="px-6 py-2 bg-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
             >
-              Lihat Semua {{ chapters.length }} Episode
+              {{
+                showAllEpisodes
+                  ? "Sembunyikan"
+                  : `Lihat Semua ${chapters.length} Episode`
+              }}
             </button>
           </div>
         </div>
@@ -329,12 +337,13 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useDramaDetail } from "../composables/useDramaDetail.js";
 
 const route = useRoute();
 const bookId = computed(() => route.params.id);
+const showAllEpisodes = ref(false);
 
 const {
   loading,
@@ -346,6 +355,15 @@ const {
   unlockedChapters,
   refresh,
 } = useDramaDetail(bookId);
+
+// Show all or first 12
+const displayedChapters = computed(() => {
+  return showAllEpisodes.value ? chapters.value : chapters.value.slice(0, 12);
+});
+
+function toggleShowAllEpisodes() {
+  showAllEpisodes.value = !showAllEpisodes.value;
+}
 
 function onImageError(e) {
   e.target.src = "https://via.placeholder.com/300x450/1a1a2e/666?text=No+Image";

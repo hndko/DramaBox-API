@@ -6,6 +6,7 @@ const DubIndoPage = () => import("../pages/DubIndoPage.vue");
 const ForYouPage = () => import("../pages/ForYouPage.vue");
 const SearchPage = () => import("../pages/SearchPage.vue");
 const DetailPage = () => import("../pages/DetailPage.vue");
+const WatchPage = () => import("../pages/WatchPage.vue");
 
 const routes = [
   {
@@ -37,6 +38,12 @@ const routes = [
     name: "Detail",
     component: DetailPage,
     meta: { title: "Detail Drama" },
+  },
+  {
+    path: "/watch/:id/:episode?",
+    name: "Watch",
+    component: WatchPage,
+    meta: { title: "Tonton", hideNav: true },
   },
   // Redirect unknown routes to home
   {
