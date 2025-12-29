@@ -110,6 +110,14 @@
         accent="purple"
       />
 
+      <!-- Trending Dramas -->
+      <DramaSection
+        v-if="trendingDramas.length > 0"
+        title="Sedang Populer"
+        :dramas="trendingDramas"
+        accent="orange"
+      />
+
       <!-- CTA Banner -->
       <section class="py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -193,10 +201,12 @@ import LoadingSkeleton from "../components/LoadingSkeleton.vue";
 import { useDramas } from "../composables/useDramas.js";
 import { useForYou } from "../composables/useForYou.js";
 import { useLatest } from "../composables/useLatest.js";
+import { useTrending } from "../composables/useTrending.js";
 
 const { loading, error, sections, featured, hasError, refresh } = useDramas();
 const { dramas: recommendations } = useForYou();
 const { dramas: latestDramas } = useLatest();
+const { dramas: trendingDramas } = useTrending();
 
 const selectedGenre = ref("Romansa");
 
